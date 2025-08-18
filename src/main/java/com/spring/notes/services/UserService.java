@@ -2,7 +2,10 @@ package com.spring.notes.services;
 
 import com.spring.notes.entities.User;
 import com.spring.notes.repositories.UserRepository;
+import com.spring.notes.security.models.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,17 @@ public class UserService {
         user.setEmail(email);
 
         userRepository.save(user);
+    }
+
+    public UserDetails loginUser(String username, String rawPassword){
+        var user = userRepository.findByUsername(username)
+                .orElseThrow(()-> new UsernameNotFoundException("Username not found"));
+        if(passwordEncoder.matches(rawPassword,user.getPassword())){
+            return new CustomUserDetails(user);
+        }
+        else {
+            throw new IllegalArgumentException("Wrong Password");
+        }
     }
 
 }

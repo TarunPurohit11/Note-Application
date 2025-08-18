@@ -19,6 +19,9 @@ public class SecurityConfig {
         http
                 .formLogin(form ->form
                 .loginPage("/login")
+                                .loginProcessingUrl("/login")
+                                .defaultSuccessUrl("/dashboard", true)
+                                .failureUrl("/login?error=true")
                 );
         return http.build();
     }

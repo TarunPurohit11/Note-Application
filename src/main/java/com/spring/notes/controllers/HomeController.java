@@ -1,7 +1,9 @@
 package com.spring.notes.controllers;
 
+import com.spring.notes.entities.User;
 import com.spring.notes.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +31,11 @@ public class HomeController {
         return "register";
     }
 
+    @GetMapping("/dashboard")
+    public String dashboardPage(){
+        return "dashboard";
+    }
+
     @PostMapping("/register")
     public String registerUser(@RequestParam String username,
                                @RequestParam String email,
@@ -46,11 +53,6 @@ public class HomeController {
 
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam String username,
-                        @RequestParam String password){
-        return "";
-    }
 
 
 }
