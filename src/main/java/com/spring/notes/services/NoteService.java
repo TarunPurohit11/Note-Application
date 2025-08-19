@@ -2,6 +2,7 @@ package com.spring.notes.services;
 
 import com.spring.notes.entities.Note;
 import com.spring.notes.repositories.NoteRepository;
+import com.spring.notes.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -15,18 +16,32 @@ import java.util.List;
 public class NoteService {
 
     private final NoteRepository noteRepository;
+    private final UserRepository userRepository;
 
-    public ResponseEntity<?> getAllNotes(Long userId){
+    public List<Note> getAllNotes(Long userId){
         List<Note> notes = noteRepository.findNoteByUserId(userId);
         if(!notes.isEmpty()){
-            return ResponseEntity.ok(notes);
+            return notes;
         }else
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Empty Here! Create now!");
+            throw new IllegalArgumentException("No notes available now!");
     }
 
     public Note getNoteById(Long noteId, Long userId){
-        return noteRepository.findByIdAndUserId(noteId,userId)
+
+         return noteRepository.findByIdAndUserId(noteId,userId)
                 .orElseThrow();
+
+    }
+
+    public Long saveNote(Long userId,String title, String content){
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Note note = new Note();
+        note.setUser(user);
+        note.setContent(content);
+        note.setTitle(title);
+
+        noteRepository.save(note);
+        return note.getId();
     }
 }

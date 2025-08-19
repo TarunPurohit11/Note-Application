@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Note</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    #editor {
+        min-height: 300px;
+        border: 1px solid #ced4da;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        background: #fff;
+        overflow-y: auto;
+        font-family: Arial;
+    }
+    .toolbar button, .toolbar select {
+        margin-right: 0.25rem;
+    }
+    .toolbar button.active {
+        background-color: #0d6efd;
+        color: white;
+    }
+    .toolbar {
+        flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+  <h2 class="mb-4">Edit Note</h2>
+
+  <form th:action="@{/user/note/save}" method="post" id="noteForm">
+    <input type="hidden" name="userId" th:value="${userId}" />
+    <input type="hidden" name="content" id="noteContent">
+
+    <!-- CSRF token -->
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+    <!-- Title -->
+    <div class="mb-3">
+      <label for="noteTitle" class="form-label">Title</label>
+      <input type="text" class="form-control" id="noteTitle" name="title" placeholder="Enter note title" th:value="${note.title != null}?${note.title}:''" required>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="mb-3 d-flex toolbar align-items-center">
+
+      <select id="headingSelect" class="form-select me-2" style="width: 120px;">
+        <option value="p">Paragraph</option>
+        <option value="h1">Heading 1</option>
+        <option value="h2">Heading 2</option>
+        <option value="h3">Heading 3</option>
+      </select>
+
+      <select id="fontSelect" class="form-select me-2" style="width: 150px;">
+        <option value="Arial">Arial</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Courier New">Courier New</option>
+      </select>
+
+      <!-- Formatting buttons -->
+      <button type="button" class="btn btn-outline-secondary" onclick="toggleStyle('bold')" title="Bold"><i class="bi bi-type-bold"></i></button>
+      <button type="button" class="btn btn-outline-secondary" onclick="toggleStyle('italic')" title="Italic"><i class="bi bi-type-italic"></i></button>
+      <button type="button" class="btn btn-outline-secondary" onclick="toggleStyle('underline')" title="Underline"><i class="bi bi-type-underline"></i></button>
+
+      <!-- Alignment buttons -->
+      <button type="button" class="btn btn-outline-secondary" onclick="toggleStyle('justifyLeft')" title="Align Left"><i class="bi bi-text-left"></i></button>
+      <button type="button" class="btn btn-outline-secondary" onclick="toggleStyle('justifyCenter')" title="Align Center"><i class="bi bi-text-center"></i></button>
+      <button type="button" class="btn btn-outline-secondary" onclick="toggleStyle('justifyRight')" title="Align Right"><i class="bi bi-text-right"></i></button>
+    </div>
+
+    <!-- Editable area -->
+    <div id="editor" contenteditable="true" th:utext="${note.content != null}?${note.content}:''"></div>
+
+    <div class="mt-3">
+      <button type="submit" class="btn btn-primary">Save Note</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const editor = document.getElementById('editor');
+  const headingSelect = document.getElementById('headingSelect');
+  const fontSelect = document.getElementById('fontSelect');
+  const noteForm = document.getElementById('noteForm');
+
+  // Enable CSS styling for execCommand
+  document.execCommand('styleWithCSS', false, true);
+
+  // Apply heading formatting
+  headingSelect.addEventListener('change', () => {
+      document.execCommand('formatBlock', false, headingSelect.value);
+      editor.focus();
+  });
+
+  // Apply font formatting
+  fontSelect.addEventListener('change', () => {
+      document.execCommand('fontName', false, fontSelect.value);
+      editor.focus();
+  });
+
+  // Toggle formatting buttons
+  function toggleStyle(command) {
+      document.execCommand(command, false, null);
+      updateActiveButtons();
+      editor.focus();
+  }
+
+  // Update toolbar button active states
+  function updateActiveButtons() {
+      document.querySelectorAll('.toolbar button').forEach(btn => btn.classList.remove('active'));
+
+      if (document.queryCommandState('bold')) document.querySelector('[onclick="toggleStyle(\'bold\')"]').classList.add('active');
+      if (document.queryCommandState('italic')) document.querySelector('[onclick="toggleStyle(\'italic\')"]').classList.add('active');
+      if (document.queryCommandState('underline')) document.querySelector('[onclick="toggleStyle(\'underline\')"]').classList.add('active');
+
+      if (document.queryCommandState('justifyLeft')) document.querySelector('[onclick="toggleStyle(\'justifyLeft\')"]').classList.add('active');
+      if (document.queryCommandState('justifyCenter')) document.querySelector('[onclick="toggleStyle(\'justifyCenter\')"]').classList.add('active');
+      if (document.queryCommandState('justifyRight')) document.querySelector('[onclick="toggleStyle(\'justifyRight\')"]').classList.add('active');
+  }
+
+  // Update active buttons on keyup and mouseup inside editor
+  editor.addEventListener('keyup', updateActiveButtons);
+  editor.addEventListener('mouseup', updateActiveButtons);
+
+  // Copy editor content into hidden input before form submission
+  noteForm.addEventListener('submit', (e) => {
+      const noteContentInput = document.getElementById('noteContent');
+      noteContentInput.value = editor.innerHTML;
+
+      // Optional: prevent submission if editor is empty
+      if(editor.innerHTML.trim() === '') {
+          e.preventDefault();
+          alert('Please enter some content in the note!');
+      }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

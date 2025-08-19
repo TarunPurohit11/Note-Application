@@ -1,10 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MYNotes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f1f3f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            flex: 1 0 auto;
+            padding-bottom: 2rem;
+        }
+        .note-card {
+            min-height: 200px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .note-content {
+            overflow-wrap: break-word;
+            max-height: 140px;
+            overflow-y: auto;
+        }
+        .three-dots {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+        }
+        .dropdown-menu {
+            min-width: 120px;
+        }
+        .navbar-nav {
+            flex-direction: row;
+        }
+        .nav-link {
+            padding: 0.5rem 1rem !important;
+        }
+        footer {
+            flex-shrink: 0;
+            padding: 3rem;
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+        }
+        .add-note-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            border: 2px dashed #0d6efd;
+            color: #0d6efd;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .add-note-card:hover {
+            background-color: #e7f1ff;
+            transform: scale(1.03);
+        }
+    </style>
 </head>
 <body>
 
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">MYNotes</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link fw-semibold" href="#">MYNotes</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold" href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold" href="/profile">Profile</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold" href="/contact">Contact</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold" href="/">Home</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container content">
+    <div class="row g-4">
+
+        <!-- Add Note Card -->
+        <div class="col-md-4">
+            <div class="card add-note-card shadow-sm"
+                 th:onclick="'window.location.href=
+                 \'/user/note/createNote?userId=' + ${userId} + '\';'">
+                <div class="card-body text-center">
+                    <h5 class="card-title display-6"><i class="bi bi-plus-circle"></i></h5>
+                    <p class="card-text fw-semibold">Add Note</p>
+                    <p class="text-muted">Click to create a new note</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="col-md-4" th:each="note : ${notesList}">
+            <div class="card note-card shadow-sm">
+                <div class="card-body position-relative">
+                    <h5 class="card-title fw-bold" th:text="${note.title}">Note Title</h5>
+                    <div class="card-text note-content" th:utext="${note.content}"></div>
+
+                    <!-- Three-dot menu -->
+                    <div class="three-dots dropdown">
+                        <button class="btn btn-light p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" th:href="@{'/user/note/' + ${note.id}}">Edit</a></li>
+                            <li><a class="dropdown-item" th:href="@{'/user/note/delete/' + ${note.id}}">Delete</a></li>
+                            <li><a class="dropdown-item" th:href="@{'/user/note/share/' + ${note.id}}">Share</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Placeholder if no notes -->
+        <div class="col-md-4" th:if="${#lists.isEmpty(notesList)}">
+            <div class="card note-card shadow-sm text-center d-flex align-items-center justify-content-center">
+                <div class="card-body">
+                    <h5 class="card-title">No Notes Yet</h5>
+                    <p class="card-text">Click "Add Note" to create your first note!</p>
+                    <a href="/user/note/new" class="btn btn-primary">Add Note</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Footer About Section -->
+<footer id="about">
+    <h3>About MYNotes</h3>
+    <p>MYNotes is a modern, easy-to-use note-taking application. Save your notes, format them, and access anywhere securely.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
