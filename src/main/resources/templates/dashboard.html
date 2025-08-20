@@ -121,7 +121,11 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" th:href="@{'/user/note/' + ${note.id}}">Edit</a></li>
-                            <li><a class="dropdown-item" th:href="@{'/user/note/delete/' + ${note.id}}">Delete</a></li>
+                            <li><form method="post" action="/user/delete/1">
+                                <input type="hidden" name="_method" value="delete" />
+                                <button type="submit">Delete</button>
+                            </form>
+                            </li>
                             <li><a class="dropdown-item" th:href="@{'/user/note/share/' + ${note.id}}">Share</a></li>
                         </ul>
                     </div>

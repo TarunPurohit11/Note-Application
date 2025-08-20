@@ -28,9 +28,10 @@ public class NoteService {
 
     public Note getNoteById(Long noteId, Long userId){
 
-         return noteRepository.findByIdAndUserId(noteId,userId)
+         Note note =  noteRepository.findByIdAndUserId(noteId,userId)
                 .orElseThrow();
-
+        System.out.println(note.getId() + " " + note.getTitle() + " " + note.getContent() );
+        return note;
     }
 
     public Long saveNote(Long userId,String title, String content){
@@ -43,5 +44,11 @@ public class NoteService {
 
         noteRepository.save(note);
         return note.getId();
+    }
+
+    public Note deleteNote(Long noteId,Long userId){
+        return noteRepository.findByIdAndUserId(noteId,userId)
+                .orElseThrow();
+
     }
 }

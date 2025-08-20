@@ -43,7 +43,7 @@
     <!-- Title -->
     <div class="mb-3">
       <label for="noteTitle" class="form-label">Title</label>
-      <input type="text" class="form-control" id="noteTitle" name="title" placeholder="Enter note title" th:text = ${note?.title} required>
+      <input type="text" class="form-control" id="noteTitle" name="title" placeholder="Enter note title" th:value="${note != null} ? ${note.title} : ''" required>
     </div>
 
     <!-- Toolbar -->
@@ -76,7 +76,7 @@
     </div>
 
     <!-- Editable area -->
-    <div id="editor" contenteditable="true" th:text="${note?.content}"></div>
+    <div id="editor" contenteditable="true" th:value="${note != null} ? ${note.content} : ''"></div>
 
     <div class="mt-3">
       <button type="submit" class="btn btn-primary">Save Note</button>

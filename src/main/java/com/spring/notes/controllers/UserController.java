@@ -38,16 +38,19 @@ public class UserController {
         return "dashboard";
     }
 
+    @GetMapping("/notesPage")
+    public String openNoteEditingPage(){
+        return "notes";
+    }
 
-    @GetMapping("/note/{noteId}")
+    @PutMapping("/note/{noteId}")
     public String getNote(@AuthenticationPrincipal UserDetails userDetails,
                         @PathVariable("noteId") Long noteId,
-                          RedirectAttributes redirectAttributes){
+                          Model model){
             Long userId = userService.findByUsername(userDetails.getUsername()).getId();
             Note note = noteService.getNoteById(noteId,userId);
-            System.out.println("Note is present and added"+" "+note.getUser()+" "+note.getContent()+" "+note.getId());
-            redirectAttributes.addFlashAttribute("note",note);
-        return "redirect:/user/note/"+noteId;
+            model.addAttribute("note",note);
+        return "redirect:/user/notesPage";
     }
 
     @GetMapping("/note/createNote")
@@ -72,6 +75,24 @@ public class UserController {
             throw new IllegalArgumentException(e);
         }
         return "redirect:/user/note/"+noteId;
+    }
+
+
+    @DeleteMapping("/delete/{noteId}")
+    public String deleteNote(@AuthenticationPrincipal UserDetails userDetails,
+                             @PathVariable("noteId") Long noteId,
+                             RedirectAttributes redirectAttributes){
+
+        Long userId = userService.findByUsername(userDetails.getUsername()).getId();
+        try{
+            noteService.deleteNote(noteId,userId);
+            redirectAttributes.addFlashAttribute("success","Deletion Successful!");
+        }catch (Exception e){
+            redirectAttributes.addFlashAttribute("error" ,"Deletion Failed");
+            throw new IllegalArgumentException("Can't delete note" + e);
+        }
+        return "redirect:/user/dashboard";
+
     }
 
 }
