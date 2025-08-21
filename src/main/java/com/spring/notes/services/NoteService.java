@@ -19,11 +19,8 @@ public class NoteService {
     private final UserRepository userRepository;
 
     public List<Note> getAllNotes(Long userId){
-        List<Note> notes = noteRepository.findNoteByUserId(userId);
-        if(!notes.isEmpty()){
-            return notes;
-        }else
-            throw new IllegalArgumentException("No notes available now!");
+        return noteRepository.findNoteByUserId(userId);
+
     }
 
     public Note getNoteById(Long noteId, Long userId){

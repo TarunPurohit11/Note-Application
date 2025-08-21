@@ -30,12 +30,13 @@ public class UserController {
     @GetMapping("/dashboard")
     public String dashboardPage(Model model,
                                 @AuthenticationPrincipal UserDetails userDetails){
+
         Long userId = userService.findByUsername(userDetails.getUsername()).getId();
         model.addAttribute("userId",userId);
-            List<Note> notes = noteService.getAllNotes(userId);
-            model.addAttribute("notesList",notes);
+        List<Note> notes = noteService.getAllNotes(userId);
+        model.addAttribute("notesList", notes);
 
-        return "dashboard";
+                 return "dashboard";
     }
 
     @GetMapping("/notesPage")
