@@ -43,9 +43,9 @@ public class NoteService {
         return note.getId();
     }
 
-    public Note deleteNote(Long noteId,Long userId){
-        return noteRepository.findByIdAndUserId(noteId,userId)
-                .orElseThrow();
+    public boolean deleteNote(Long noteId,Long userId){
+         noteRepository.deleteByIdAndUserId(noteId,userId);
 
+         return true;
     }
 }

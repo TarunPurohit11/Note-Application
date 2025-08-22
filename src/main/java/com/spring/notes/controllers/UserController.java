@@ -85,12 +85,11 @@ public class UserController {
                              RedirectAttributes redirectAttributes){
 
         Long userId = userService.findByUsername(userDetails.getUsername()).getId();
-        try{
-            noteService.deleteNote(noteId,userId);
+        boolean deleteNote = noteService.deleteNote(noteId,userId);
+        if(deleteNote){
             redirectAttributes.addFlashAttribute("success","Deletion Successful!");
-        }catch (Exception e){
+        }else {
             redirectAttributes.addFlashAttribute("error" ,"Deletion Failed");
-            throw new IllegalArgumentException("Can't delete note" + e);
         }
         return "redirect:/user/dashboard";
 

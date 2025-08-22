@@ -18,5 +18,5 @@ public interface NoteRepository extends JpaRepository<Note,Long> {
     @Modifying
     @Transactional
     @Query("DELETE FROM Note n WHERE n.id = :noteId AND n.user.id = :userId")
-    Optional<Note> deleteByIdAndUserId(Long noteId,Long userId);
+    void deleteByIdAndUserId(Long noteId,Long userId);
 }

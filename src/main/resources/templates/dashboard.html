@@ -121,10 +121,12 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" th:href="@{'/user/note/' + ${note.id}}">Edit</a></li>
-                            <li><form method="post" action="/user/delete/1">
-                                <input type="hidden" name="_method" value="delete" />
-                                <button type="submit">Delete</button>
-                            </form>
+                            <li>
+                                <form method="post" th:action="@{'/user/delete/' + ${note.id}}">
+                                    <input type="hidden" name="_method" value="delete" />
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <button type="submit">Delete</button>
+                                </form>
                             </li>
                             <li><a class="dropdown-item" th:href="@{'/user/note/share/' + ${note.id}}">Share</a></li>
                         </ul>
@@ -136,11 +138,10 @@
 
         <!-- Placeholder if no notes -->
         <div class="col-md-4" th:if="${#lists.isEmpty(notesList)}">
-            <div class="card note-card shadow-sm text-center d-flex align-items-center justify-content-center">
                 <div class="card-body">
                     <h5 class="card-title">No Notes Yet</h5>
                     <p class="card-text">Click "Add Note" to create your first note!</p>
-                    <a href="/user/note/new" class="btn btn-primary">Add Note</a>
+                    <button th:onclick = "@{'/user/note/createNote?userId=' + ${userId}}">Add Notes</button>
                 </div>
             </div>
         </div>
